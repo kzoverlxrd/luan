@@ -211,10 +211,10 @@ def create_emission_chart(raw_data, selected_date):
                 ax.scatter(selected_date, chart_data.loc[selected_date, 'carbon_emission_co2'], 
                           color='red', s=100, zorder=5, label='选中日期')
             
-            ax.set_xlabel('日期')
-            ax.set_ylabel('碳排放量 (吨CO2)')
-            ax.set_title('最近30天碳排放趋势')
-            ax.legend()
+            ax.set_xlabel('日期', fontproperties=my_font)
+            ax.set_ylabel('碳排放量 (吨CO2)', fontproperties=my_font)
+            ax.set_title('最近30天碳排放趋势', fontproperties=my_font)
+            ax.legend(prop=my_font)
             ax.grid(True, alpha=0.3)
             
             # 旋转x轴标签
@@ -249,8 +249,8 @@ def create_shap_waterfall(model, X, selected_date, feature_names):
             ),
             show=False
         )
-        plt.title(f'SHAP瀑布图 - {selected_date.strftime("%Y-%m-%d")} 碳排放预测解释', fontsize=14, fontweight='bold')
-        plt.xlabel('SHAP值（对预测的影响）', fontsize=12)
+        plt.title(f'SHAP瀑布图 - {selected_date.strftime("%Y-%m-%d")} 碳排放预测解释', fontsize=14, fontweight='bold', fontproperties=my_font)
+        plt.xlabel('SHAP值（对预测的影响）', fontsize=12, fontproperties=my_font)
         plt.tight_layout()
         return fig, None
     except Exception as e:
@@ -436,10 +436,10 @@ def plot_sensitivity_analysis(param_values, predictions, param_name, original_va
         }
         
         xlabel = param_labels.get(param_name, str(param_name))
-        ax.set_xlabel(xlabel)
-        ax.set_ylabel('预测碳排放量 (吨CO2)')
-        ax.set_title(f'{param_labels.get(param_name, param_name)}敏感性分析')
-        ax.legend()
+        ax.set_xlabel(xlabel, fontproperties=my_font)
+        ax.set_ylabel('预测碳排放量 (吨CO2)', fontproperties=my_font)
+        ax.set_title(f'{param_labels.get(param_name, param_name)}敏感性分析', fontproperties=my_font)
+        ax.legend(prop=my_font)
         ax.grid(True, alpha=0.3)
         
         plt.tight_layout()
