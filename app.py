@@ -37,6 +37,20 @@ LABELS = {
     "sensitivity": "Sensitivity Analysis" if IS_CLOUD else "敏感性分析",
 }
 
+# 检测是否在 Streamlit Cloud
+IS_CLOUD = "STREAMLIT_SERVER_HOST" in os.environ or "STREAMLIT_CLOUD" in os.environ
+
+# 标签字典
+LABELS = {
+    "trend": "Trend Analysis" if IS_CLOUD else "趋势分析",
+    "date": "Date" if IS_CLOUD else "日期",
+    "co2": "CO2 Emission (tons)" if IS_CLOUD else "碳排放量 (吨CO2)",
+    "last_30_days": "CO2 Trend (Last 30 Days)" if IS_CLOUD else "最近30天碳排放趋势",
+    "shap_title": "SHAP Waterfall - CO2 Prediction Explanation" if IS_CLOUD else "SHAP瀑布图 - 碳排放预测解释",
+    "shap_xlabel": "SHAP Value (Impact on Prediction)" if IS_CLOUD else "SHAP值（对预测的影响）",
+    "sensitivity": "Sensitivity Analysis" if IS_CLOUD else "敏感性分析",
+}
+
 # 字体文件路径
 font_path = os.path.join(os.path.dirname(__file__), "fonts", "NotoSansSC-Regular.otf")
 if not IS_CLOUD and os.path.exists(font_path):
@@ -449,7 +463,7 @@ def plot_sensitivity_analysis(param_values, predictions, param_name, original_va
         }
         
         xlabel = param_labels.get(param_name, str(param_name))
-        ax.set_xlabel(xlabel, fontproperties=my_font if not IS_CLOUD else None)
+        ax.set_xlabel(LABELS["date"], fontproperties=my_font if not IS_CLOUD else None)
         ax.set_ylabel(LABELS["co2"], fontproperties=my_font if not IS_CLOUD else None)
         ax.set_title(LABELS["sensitivity"], fontproperties=my_font if not IS_CLOUD else None)
         ax.legend(prop=my_font if not IS_CLOUD else None)
