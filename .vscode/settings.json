@@ -1,0 +1,19 @@
+{
+  "python.defaultInterpreterPath": "/Library/Developer/CommandLineTools/usr/bin/python3",
+  "python.analysis.extraPaths": [
+    "./src"
+  ],
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.autoSearchPaths": true,
+  "python.analysis.diagnosticMode": "workspace",
+  "python.analysis.stubPath": "./typings",
+  "python.analysis.include": [
+    "**/*.py"
+  ],
+  "python.analysis.exclude": [
+    "**/__pycache__",
+    "**/.*",
+    "**/node_modules"
+  ]
+} 
