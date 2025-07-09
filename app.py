@@ -93,6 +93,10 @@ if 'coke_ratio' in en2zh:
 if 'coke_consumption_total' in en2zh:
     en2zh['coke_consumption_total'] = '焦炭消耗'
 
+st.write("字体文件存在：", os.path.exists(font_path))
+if my_font:
+    st.write("字体名：", my_font.get_name())
+
 @st.cache_data
 def load_data():
     """
