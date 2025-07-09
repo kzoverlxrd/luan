@@ -23,9 +23,11 @@ import os
 font_path = os.path.join(os.path.dirname(__file__), "fonts", "NotoSansSC-Regular.otf")
 if os.path.exists(font_path):
     my_font = fm.FontProperties(fname=font_path)
+    fm._rebuild()  # 强制重建字体缓存
     plt.rcParams['font.sans-serif'] = [my_font.get_name()]
     plt.rcParams['axes.unicode_minus'] = False
 else:
+    my_font = None
     plt.rcParams['font.sans-serif'] = ['DejaVu Sans']
     plt.rcParams['axes.unicode_minus'] = False 
 from src.feature_name_map import en2zh
