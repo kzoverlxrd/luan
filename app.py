@@ -14,6 +14,20 @@ from datetime import datetime, timedelta
 import sys
 import os
 import matplotlib
+plotly 
+import matplotlib.font_manager as fm
+import matplotlib.pyplot as plt
+import os
+
+# 字体文件路径
+font_path = os.path.join(os.path.dirname(__file__), "fonts", "NotoSansSC-Regular.otf")
+if os.path.exists(font_path):
+    my_font = fm.FontProperties(fname=font_path)
+    plt.rcParams['font.sans-serif'] = [my_font.get_name()]
+    plt.rcParams['axes.unicode_minus'] = False
+else:
+    plt.rcParams['font.sans-serif'] = ['DejaVu Sans']
+    plt.rcParams['axes.unicode_minus'] = False 
 from src.feature_name_map import en2zh
 from create_dummy_data import calculate_carbon_emission_wsa
 
