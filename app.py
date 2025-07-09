@@ -14,7 +14,8 @@ from datetime import datetime, timedelta
 import sys
 import os
 import matplotlib
-plotly 
+import plotly
+import plotly.graph_objects as go
 import matplotlib.font_manager as fm
 import matplotlib.pyplot as plt
 import os
