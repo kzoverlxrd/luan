@@ -24,7 +24,7 @@ import os
 font_path = os.path.join(os.path.dirname(__file__), "fonts", "NotoSansSC-Regular.otf")
 if os.path.exists(font_path):
     my_font = fm.FontProperties(fname=font_path)
-    fm._rebuild()  # 强制重建字体缓存
+    # fm._rebuild()  # 强制重建字体缓存（新版matplotlib已无此方法，直接注释掉）
     plt.rcParams['font.sans-serif'] = [my_font.get_name()]
     plt.rcParams['axes.unicode_minus'] = False
 else:
