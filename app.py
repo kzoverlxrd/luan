@@ -93,7 +93,7 @@ st.markdown("""
         justify-content: center;
         gap: 22px;
     }
-    .stTabs [data-baseweb="tab"] {·
+    .stTabs [data-baseweb="tab"] {
         font-size: 1.15em;
         font-weight: 500;
         color: #222;
