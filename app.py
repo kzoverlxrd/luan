@@ -250,8 +250,17 @@ def create_shap_waterfall(model, X, selected_date, feature_names):
         sample_data = X.loc[selected_date:selected_date]
         explainer = shap.TreeExplainer(model)
         shap_values = explainer.shap_values(sample_data)
-        # 特征名本地用中文，云端用英文
-        feature_names_to_use = [en2zh.get(f, f) for f in feature_names] if not IS_CLOUD else feature_names
+        # 云端全英文，本地用中文
+        if IS_CLOUD:
+            feature_names_to_use = feature_names
+            title = "SHAP Waterfall - CO2 Prediction Explanation"
+            xlabel = "SHAP Value (Impact on Prediction)"
+            font_kwargs = {}
+        else:
+            feature_names_to_use = [en2zh.get(f, f) for f in feature_names]
+            title = "SHAP瀑布图 - 碳排放预测解释"
+            xlabel = "SHAP值（对预测的影响）"
+            font_kwargs = {"fontproperties": my_font}
         fig, ax = plt.subplots(figsize=(12, 8))
         shap.waterfall_plot(
             shap.Explanation(
@@ -262,8 +271,8 @@ def create_shap_waterfall(model, X, selected_date, feature_names):
             ),
             show=False
         )
-        plt.title(LABELS["shap_title"], fontsize=14, fontweight='bold', fontproperties=my_font if not IS_CLOUD else None)
-        plt.xlabel(LABELS["shap_xlabel"], fontsize=12, fontproperties=my_font if not IS_CLOUD else None)
+        plt.title(title, fontsize=14, fontweight='bold', **font_kwargs)
+        plt.xlabel(xlabel, fontsize=12, **font_kwargs)
         plt.tight_layout()
         return fig, None
     except Exception as e:
