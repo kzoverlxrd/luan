@@ -98,7 +98,7 @@ def demo_simulation():
     # 创建可视化图表
     print("\n5. 生成可视化图表...")
     
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
     
     # 煤比率敏感性图
     ax1.plot(coal_ratios, coal_predictions, 'bo-', linewidth=2, markersize=8)

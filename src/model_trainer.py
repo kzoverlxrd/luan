@@ -174,7 +174,7 @@ class ModelTrainer:
         }).sort_values('importance', ascending=True)
         
         # 绘制特征重要性图
-        plt.figure(figsize=(10, 8))
+        plt.figure(figsize=(8, 6))
         plt.barh(range(len(importance_df)), importance_df['importance'])
         plt.yticks(range(len(importance_df)), [en2zh.get(f, f) for f in importance_df['feature']])
         plt.xlabel('特征重要性')
@@ -231,7 +231,7 @@ class ModelTrainer:
         y_test_pred = self.model.predict(self.X_test)
         
         # 创建图形
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
         
         # 训练集预测对比
         ax1.scatter(self.y_train, y_train_pred, alpha=0.6)

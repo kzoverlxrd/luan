@@ -122,7 +122,7 @@ def analyze_feature_importance():
     print("\n4. 生成可视化图表...")
     
     # 创建图表
-    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(16, 12))
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(14, 10))
     
     # 1. 特征重要性条形图
     top_features = feature_importance.head(10)

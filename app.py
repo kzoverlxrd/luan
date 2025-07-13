@@ -227,7 +227,7 @@ def create_emission_chart(raw_data, selected_date):
         chart_data = raw_data[(raw_data.index >= start_date) & (raw_data.index <= end_date)]
         
         if len(chart_data) > 0:
-            fig, ax = plt.subplots(figsize=(12, 6))
+            fig, ax = plt.subplots(figsize=(10, 5))
             
             # 绘制碳排放趋势
             ax.plot(chart_data.index, chart_data['carbon_emission_co2'], 
@@ -275,7 +275,7 @@ def create_shap_waterfall(model, X, selected_date, feature_names):
             title = "SHAP瀑布图 - 碳排放预测解释"
             xlabel = "SHAP值（对预测的影响）"
             font_kwargs = {"fontproperties": my_font}
-        fig, ax = plt.subplots(figsize=(12, 8))
+        fig, ax = plt.subplots(figsize=(10, 6))
         shap.waterfall_plot(
             shap.Explanation(
                 values=shap_values[0],
@@ -452,7 +452,7 @@ def plot_sensitivity_analysis(param_values, predictions, param_name, original_va
     绘制敏感性分析图
     """
     try:
-        fig, ax = plt.subplots(figsize=(10, 6))
+        fig, ax = plt.subplots(figsize=(8, 5))
         
         # 绘制敏感性曲线
         ax.plot(param_values, predictions, 'b-', linewidth=2, label=LABELS["co2"])
