@@ -452,7 +452,7 @@ def plot_sensitivity_analysis(param_values, predictions, param_name, original_va
     绘制敏感性分析图
     """
     try:
-        fig, ax = plt.subplots(figsize=(8, 5))
+        fig, ax = plt.subplots(figsize=(4, 2))
         
         # 绘制敏感性曲线
         ax.plot(param_values, predictions, 'b-', linewidth=2, label=LABELS["co2"])
