@@ -22,20 +22,7 @@ import os
 import streamlit.components.v1 as components
 from streamlit_javascript import st_javascript
 import base64
-
-# 检测是否在 Streamlit Cloud
-IS_CLOUD = "STREAMLIT_SERVER_HOST" in os.environ or "STREAMLIT_CLOUD" in os.environ
-
-# 标签字典
-LABELS = {
-    "trend": "Trend Analysis" if IS_CLOUD else "趋势分析",
-    "date": "Date" if IS_CLOUD else "日期",
-    "co2": "CO2 Emission (tons)" if IS_CLOUD else "碳排放量 (吨CO2)",
-    "last_30_days": "CO2 Trend (Last 30 Days)" if IS_CLOUD else "最近30天碳排放趋势",
-    "shap_title": "SHAP Waterfall - CO2 Prediction Explanation" if IS_CLOUD else "SHAP瀑布图 - 碳排放预测解释",
-    "shap_xlabel": "SHAP Value (Impact on Prediction)" if IS_CLOUD else "SHAP值（对预测的影响）",
-    "sensitivity": "Sensitivity Analysis" if IS_CLOUD else "敏感性分析",
-}
+import io
 
 # 检测是否在 Streamlit Cloud
 IS_CLOUD = "STREAMLIT_SERVER_HOST" in os.environ or "STREAMLIT_CLOUD" in os.environ
@@ -123,9 +110,11 @@ if 'coke_ratio' in en2zh:
 if 'coke_consumption_total' in en2zh:
     en2zh['coke_consumption_total'] = '焦炭消耗'
 @st.cache_data
+@st.cache_data
+@st.cache_data
 def load_data():
     """
-    缓存加载数据
+    缓存加载数据，只加载data/daily_production_data.csv
     """
     try:
         data_handler = DataHandler("data/daily_production_data.csv")
@@ -142,7 +131,6 @@ def load_data():
     except Exception as e:
         st.error(f"数据加载错误: {e}")
         return None, None, None
-
 @st.cache_resource
 def load_model():
     """
@@ -215,6 +203,9 @@ def get_prediction_for_date(model, X, raw_data, selected_date):
         return None, None
 
 def create_emission_chart(raw_data, selected_date):
+    # 1. 日期保护：如果selected_date不在索引，自动用最大日期
+    if selected_date not in raw_data.index:
+        selected_date = raw_data.index.max()
     """
     创建碳排放趋势图
     """
@@ -222,38 +213,36 @@ def create_emission_chart(raw_data, selected_date):
         # 获取最近30天的数据
         end_date = selected_date
         start_date = end_date - timedelta(days=30)
-        
         # 过滤数据
         chart_data = raw_data[(raw_data.index >= start_date) & (raw_data.index <= end_date)]
-        
+        # 2. 如果chart_data为空，自动用raw_data最后30天
+        if chart_data.empty:
+            chart_data = raw_data.tail(30)
+            end_date = chart_data.index.max()
+            selected_date = end_date
         if len(chart_data) > 0:
             fig, ax = plt.subplots(figsize=(10, 5))
-            
             # 绘制碳排放趋势
             ax.plot(chart_data.index, chart_data['carbon_emission_co2'], 
                    marker='o', linewidth=2, markersize=6, label=LABELS["co2"])
-            
             # 高亮显示选中日期
             if selected_date in chart_data.index:
                 ax.scatter(selected_date, chart_data.loc[selected_date, 'carbon_emission_co2'], 
                           color='red', s=100, zorder=5, label='Selected' if IS_CLOUD else '选中日期')
-            
             ax.set_xlabel(LABELS["date"], fontproperties=my_font if not IS_CLOUD else None)
             ax.set_ylabel(LABELS["co2"], fontproperties=my_font if not IS_CLOUD else None)
             ax.set_title(LABELS["last_30_days"], fontproperties=my_font if not IS_CLOUD else None)
             ax.legend(prop=my_font if not IS_CLOUD else None)
             ax.grid(True, alpha=0.3)
-            
-            # 旋转x轴标签
             plt.xticks(rotation=45)
             plt.tight_layout()
-            
             return fig
         else:
             return None
     except Exception as e:
         st.error(f"图表创建错误: {e}")
         return None
+
 
 def create_shap_waterfall(model, X, selected_date, feature_names):
     """
@@ -452,35 +441,30 @@ def plot_sensitivity_analysis(param_values, predictions, param_name, original_va
     绘制敏感性分析图
     """
     try:
-        fig, ax = plt.subplots(figsize=(4, 2))
-        
+        import matplotlib.pyplot as plt
+        fig, ax = plt.subplots(figsize=(7, 4.5), dpi=100)  # 自动调整为适中尺寸
         # 绘制敏感性曲线
         ax.plot(param_values, predictions, 'b-', linewidth=2, label=LABELS["co2"])
-        
         # 标记原始值
         import numpy as np
         param_values_arr = np.array(param_values)
         original_prediction = predictions[np.argmin(np.abs(param_values_arr - original_value))]
         ax.axvline(x=original_value, color='r', linestyle='--', alpha=0.7, label='Original' if IS_CLOUD else '原始值')
         ax.axhline(y=original_prediction, color='g', linestyle='--', alpha=0.7, label='Original Prediction' if IS_CLOUD else '原始预测')
-        
         # 设置标签和标题
         param_labels = {
             'coal_ratio': 'Coal Ratio' if IS_CLOUD else '煤比率',
             'luan_coal_ash_avg': 'Luan Coal Ash (%)' if IS_CLOUD else '潞安煤灰分 (%)',
             'blast_temp_avg': 'Blast Temp (°C)' if IS_CLOUD else '鼓风温度 (°C)'
         }
-        
         xlabel = param_labels.get(param_name, str(param_name))
         ax.set_xlabel(LABELS["date"], fontproperties=my_font if not IS_CLOUD else None)
         ax.set_ylabel(LABELS["co2"], fontproperties=my_font if not IS_CLOUD else None)
         ax.set_title(LABELS["sensitivity"], fontproperties=my_font if not IS_CLOUD else None)
         ax.legend(prop=my_font if not IS_CLOUD else None)
         ax.grid(True, alpha=0.3)
-        
         plt.tight_layout()
         return fig
-        
     except Exception as e:
         st.error(f"图表创建错误: {e}")
         return None
@@ -1067,7 +1051,11 @@ def render_simulation_page(model, model_info, X, y, raw_data, selected_date):
                     param_values, predictions, sensitivity_param, original_value
                 )
                 if sensitivity_fig is not None:
-                    st.pyplot(sensitivity_fig)
+                    import io
+                    buf = io.BytesIO()
+                    sensitivity_fig.savefig(buf, format="png")  # 不加bbox_inches="tight"
+                    buf.seek(0)
+                    st.image(buf, width=650)
                     st.markdown("### 📈 敏感性分析结果:")
                     min_prediction_idx = np.argmin(predictions)
                     optimal_value = param_values[min_prediction_idx]
@@ -1419,7 +1407,7 @@ def render_sidebar(raw_data, X, model):
                 df = df.dropna(subset=['carbon_emission_co2'])
                 df.to_csv(save_path, index=False)
                 st.sidebar.success("✅ 数据上传、清洗并补全成功！")
-                st.sidebar.info("⚠️ 如需加载新数据，请点击页面右上角菜单，选择'Clear cache'后刷新页面。")
+             
                 retrain = st.sidebar.checkbox("上传后立即重新训练模型", value=True)
                 if retrain:
                     with st.spinner("正在重新训练模型..."):
@@ -1430,8 +1418,12 @@ def render_sidebar(raw_data, X, model):
                     st.sidebar.info("数据已保存，如需生效请手动重新训练模型或刷新页面。")
         except Exception as e:
             st.sidebar.error(f"数据导入失败: {e}\n请确认文件编码为UTF-8或GBK，并检查字段格式是否正确。")
+    
     if st.sidebar.button("🔄 数据刷新", key="sidebar_refresh_btn"):
+        st.cache_data.clear()
+        st.cache_resource.clear()
         st.rerun()
+
     # 系统信息
     st.sidebar.markdown("---")
     st.sidebar.header("📊 系统信息")
