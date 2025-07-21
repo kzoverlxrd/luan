@@ -1407,15 +1407,14 @@ def render_sidebar(raw_data, X, model):
                 df = df.dropna(subset=['carbon_emission_co2'])
                 df.to_csv(save_path, index=False)
                 st.sidebar.success("✅ 数据上传、清洗并补全成功！")
-             
-                retrain = st.sidebar.checkbox("上传后立即重新训练模型", value=True)
-                if retrain:
+                # 上传后显示训练按钮
+                if st.sidebar.button("开始训练模型", key="sidebar_train_btn"):
                     with st.spinner("正在重新训练模型..."):
                         from app import train_new_model
                         model, model_info = train_new_model()
                     st.sidebar.success("模型训练完成！请刷新页面体验新数据。")
                 else:
-                    st.sidebar.info("数据已保存，如需生效请手动重新训练模型或刷新页面。")
+                    st.sidebar.info("数据已保存，如需生效请手动点击'开始训练模型'或刷新页面。")
         except Exception as e:
             st.sidebar.error(f"数据导入失败: {e}\n请确认文件编码为UTF-8或GBK，并检查字段格式是否正确。")
     
